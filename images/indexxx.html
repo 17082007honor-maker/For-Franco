@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Love Letter</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Miss+Gendhis&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #76473f;
+  --envelope: #861d1d;
+  --ink: #3b2f2a;
+}
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  font-family: 'Miss Gendhis', cursive;
+  overflow: hidden;
+}
+
+/* ---------- FOG ---------- */
+#fog {
+  position: fixed;
+  inset: 0;
+  background: white;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.6s ease;
+  z-index: 999;
+}
+#fog.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ---------- SCENE ---------- */
+.scene {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ---------- ENVELOPE ---------- */
+.envelope {
+  width: 980px;   /* ← changed */
+  height: 620px;  /* ← changed */
+  position: relative;
+  border-radius: 8px;
+  cursor: pointer;
+  background:
+    linear-gradient(135deg, var(--envelope), #781313),
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.05) 0, rgba(255,255,255,0.05) 1px, transparent 1px, transparent 4px),
+    repeating-linear-gradient(-45deg, rgba(0,0,0,0.04) 0, rgba(0,0,0,0.04) 1px, transparent 1px, transparent 5px);
+  box-shadow: inset 0 0 35px rgba(0,0,0,0.4);
+  z-index: 2;
+}
+
+
+.envelope::before {
+  content:"";
+  position:absolute;
+  inset:16px;
+  background:#6f1212;
+  border-radius:4px;
+}
+
+/* ---------- FLAP ---------- */
+.flap {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 55%;
+  background: linear-gradient(#9a2b2b, #7a1515);
+  clip-path: polygon(0 0, 50% 100%, 100% 0);
+  transform-origin: top;
+  transition: transform 1.4s ease;
+}
+
+.envelope.open .flap {
+  transform: rotateX(180deg);
+}
+
+/* ---------- SEAL ---------- */
+.seal {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transition: transform 0.9s ease, opacity 0.9s ease;
+  z-index: 3;
+}
+
+.envelope.open .seal {
+  transform: translate(-50%, -100px) scale(0.9);
+  opacity: 0;
+}
+
+.seal img {
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------- LETTER ---------- */
+.paper {
+  position: absolute;
+  width: 88%;
+  height: 88vh;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, 40%) scale(0.7);
+  opacity: 0;
+
+  background:
+    url("images/paper-texture.png"),
+    linear-gradient(rgba(0,0,0,0.025), rgba(0,0,0,0.025)),
+    repeating-radial-gradient(circle at 25% 30%, rgba(0,0,0,0.03) 0, transparent 1px),
+    #f2e6cf;
+
+  background-size: cover;
+  background-blend-mode: multiply;
+
+  border-radius: 8px;
+  padding: 170px 110px 200px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+  overflow-y: auto;
+  transition: all 1.8s ease;
+  z-index: 5;
+}
+
+.envelope.open + .paper {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* ---------- TEXT ---------- */
+.paper p {
+  color: var(--ink);
+  font-size: 28px;
+  line-height: 1.65;
+  margin: 0 0 30px;
+}
+
+.sp-1 { margin-top: 80px; }
+.sp-2 { margin-top: 100px; }
+.sp-3 { margin-top: 32px; }
+.sp-4 { margin-top: 500px; }
+
+/* ---------- FLOWERS ---------- */
+.give {
+  margin-top: 90px;
+  margin-bottom: 180px;
+  font-size: 34px;
+}
+
+/* 🔧 REFINED BOUQUET LAYOUT */
+.bouquet {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  gap: 26px;
+  align-items: flex-end;
+}
+
+.flower {
+  position: relative;
+  transition: transform 0.6s ease, filter 0.6s ease;
+}
+
+.flower img { height: 220px; }
+.flower.big img { height: 250px; }
+
+/* ✅ ONLY CHANGE: CAPS / QUOTE FIX */
+.flower span {
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  white-space: nowrap;
+
+  padding: 0 6px;              /* ← caps fix */
+  box-sizing: content-box;     /* ← caps fix */
+
+  color: var(--ink);
+  font-size: 22px;
+  text-align: center;
+  transition: opacity 0.6s ease;
+}
+
+.bouquet:hover .flower {
+  filter: blur(2px) brightness(0.8);
+}
+
+.flower:hover {
+  filter: none !important;
+  transform: scale(1.15) translateY(-10px);
+  z-index: 10;
+}
+
+.flower:hover span {
+  opacity: 1;
+}
+
+/* ---------- RESET ---------- */
+.reset {
+  margin-top: 120px;
+  margin-left: auto;
+  display: block;
+  background: var(--envelope);
+  color: white;
+  border: none;
+  padding: 12px 26px;
+  border-radius: 22px;
+  font-family: 'Miss Gendhis', cursive;
+  font-size: 22px;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div id="fog"></div>
+
+<div class="scene">
+  <div class="envelope" id="envelope">
+    <div class="flap"></div>
+    <div class="seal"><img src="images/seal.png"></div>
+  </div>
+
+  <div class="paper">
+    <p>My love, I never thought I'd find someone like you, someone so alike to me, someone who's everything I ever wanted.</p>
+
+    <p class="sp-1">You're my first one and in so many ways: first one to hear I love you, first one to match this deep, first one to make me feel safe like never before, first one who cares as greatly as I do, first one to never fail to reassure me, first one who never made me worry, first one to whom I opened my heart, first one to know my parents, my first valentine.</p>
+
+    <p class="sp-2">I waited so long, but all was worth waiting for you.</p>
+    <p class="sp-3">Every love story I wished I was in, I found in you.</p>
+    <p class="sp-3">I love you, happy valentine's day love</p>
+    <p class="sp-4">Your Ana</p>
+
+    <p class="sp-4"><em>P.S. Symbolism is one of my favourite forms of expression and flowers are one of my favourite things. And although flowers don't matter to you that much, I've decided to show what you mean to me by a bouquet with each blossom having a symbolic meaning that resonates with my feelings. You'll find them at the bottom of the letter.</em></p>
+
+    <div class="give">I give you:</div>
+
+    <div class="bouquet">
+      <div class="flower big"><img src="images/chrysanthemum.png"><span>Red Chrysanthemum<br><em>"I am always thinking of you"</em></span></div>
+      <div class="flower big"><img src="images/cosmos.png"><span>Pink Cosmos<br><em>"You make my world complete"</em></span></div>
+      <div class="flower"><img src="images/alstroemeria.png"><span>Orange Alstroemeria<br><em>"I am lucky to have you"</em></span></div>
+      <div class="flower"><img src="images/peony.png"><span>Deep Red Peony<br><em>"Forever captivated by your charm"</em></span></div>
+      <div class="flower"><img src="images/camellia.png"><span>Pink Camellia<br><em>"I'm completely enchanted by you"</em></span></div>
+      <div class="flower big"><img src="images/sunflower.png"><span>Sunflower<br><em>"You light up my world like the sun"</em></span></div>
+    </div>
+
+    <button class="reset" id="reset">Reset</button>
+  </div>
+</div>
+
+<script>
+const envelope = document.getElementById('envelope');
+const reset = document.getElementById('reset');
+const fog = document.getElementById('fog');
+
+envelope.addEventListener('click', () => {
+  envelope.classList.add('open');
+});
+
+reset.addEventListener('click', () => {
+  fog.classList.add('active');
+
+  setTimeout(() => {
+    envelope.classList.remove('open');
+  }, 1800);
+
+  setTimeout(() => {
+    fog.classList.remove('active');
+  }, 4200);
+});
+</script>
+
+</body>
+</html> 
